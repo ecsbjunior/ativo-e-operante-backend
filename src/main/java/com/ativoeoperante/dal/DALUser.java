@@ -1,6 +1,7 @@
 package com.ativoeoperante.dal;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.ativoeoperante.model.User;
@@ -34,6 +35,21 @@ public class DALUser {
 		SQL = SQL.replaceAll("#1", id+"");
 		
 		return Conexao.getCon().manipular(SQL);
+	}
+	
+	public boolean validade(String apikey) {
+		String SQL = "SELECT * FROM users WHERE apikey='#1'";
+		
+		SQL = SQL.replaceAll("#1", apikey);
+		
+		ResultSet rs = Conexao.getCon().consultar(SQL);
+		
+		try {
+			return rs.next();
+		}
+		catch(Exception e) {
+			return false;
+		}
 	}
 	
 	public User get(int id) {

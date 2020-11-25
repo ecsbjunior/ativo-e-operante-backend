@@ -63,14 +63,11 @@ public class Conexao {
             Statement statement = connect.createStatement();
             int result = statement.executeUpdate(sql);
             statement.close();
-            if (result >= 1) {
-                return true;
-            }
+            return true;
         } catch (SQLException sqlex) {
             erro = "Erro: " + sqlex.toString();
             return false;
         }
-        return false;
     }
 
     public ResultSet consultar(String sql) {

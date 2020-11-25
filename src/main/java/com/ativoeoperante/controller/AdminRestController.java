@@ -27,7 +27,7 @@ public class AdminRestController {
 		
 		if(admins.size() == 1)
 			return "{" +
-				       "\"token\":" + "\"" + HashGenerator.generate(16) + "\"," +
+				       "\"token\":" + "\"" + admins.get(0).getApiKey() + "\"," +
 				       "\"username\":" + "\"" + admins.get(0).getUsername() + "\"" +
 				   "}";
 		

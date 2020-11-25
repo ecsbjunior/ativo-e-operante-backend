@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ativoeoperante.dal.DALAdmin;
 import com.ativoeoperante.dal.DALComplaint;
 import com.ativoeoperante.dal.DALFeedback;
+import com.ativoeoperante.dal.DALUser;
 import com.ativoeoperante.model.Feedback;
 
 @RestController
@@ -21,24 +23,33 @@ import com.ativoeoperante.model.Feedback;
 @CrossOrigin(origins="*")
 public class FeedbackRestController {
 	private DALFeedback dalFeedback = new DALFeedback();
+	private DALUser dalUser = new DALUser();
+	private DALAdmin dalAdmin = new DALAdmin();
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Object> getFeedbacks(@PathVariable String id) {
-		HashMap<String, Feedback> map = new HashMap<String, Feedback>();
-		
-		ArrayList<Feedback> feedbacks = dalFeedback.get(Integer.parseInt(id));
-		
-		for(Feedback feedback : feedbacks) {
-			map.put(feedback.getId()+"", feedback);
+	public ResponseEntity<Object> getFeedbacks(@PathVariable String id, @RequestParam String apikey) {
+		if(dalUser.validade(apikey) || dalAdmin.validade(apikey)) {
+			HashMap<String, Feedback> map = new HashMap<String, Feedback>();
+			
+			ArrayList<Feedback> feedbacks = dalFeedback.get(Integer.parseInt(id));
+			
+			for(Feedback feedback : feedbacks) {
+				map.put(feedback.getId()+"", feedback);
+			}
+			
+			return new ResponseEntity<>(map.values(), HttpStatus.OK);
 		}
 		
-		return new ResponseEntity<>(map.values(), HttpStatus.OK);
+		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public String createCompetentOrgan(@RequestParam String description, @RequestParam String complaint_id) {
-		Feedback feedback = new Feedback(description, new DALComplaint().get(Integer.parseInt(complaint_id)));
+	public String createCompetentOrgan(@RequestParam String description, @RequestParam String complaint_id, @RequestParam String apikey) {
+		if(dalUser.validade(apikey) || dalAdmin.validade(apikey)) {
+			Feedback feedback = new Feedback(description, new DALComplaint().get(Integer.parseInt(complaint_id)));
+			return "{\"status\": " + dalFeedback.insert(feedback) + "}";
+		}
 		
-		return "{\"status\": " + dalFeedback.insert(feedback) + "}";
+		return "{\"status\": false}"; 
 	}
 }

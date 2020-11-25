@@ -61,10 +61,19 @@ public class DALComplaint {
 		boolean ans = Conexao.getCon().manipular(SQL);
 		
 		if(ans) {
-			SQL = "DELETE FROM complaints WHERE id='#1'";
+			SQL = "DELETE FROM feedback WHERE complaint_id='#1'";
+			
 			SQL = SQL.replaceAll("#1", id+"");
 			
 			ans = Conexao.getCon().manipular(SQL);
+			
+			if(ans) {
+				SQL = "DELETE FROM complaints WHERE id='#1'";
+				
+				SQL = SQL.replaceAll("#1", id+"");
+				
+				ans = Conexao.getCon().manipular(SQL);
+			}
 		}
 		
 		return ans;

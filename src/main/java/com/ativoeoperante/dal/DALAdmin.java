@@ -8,10 +8,11 @@ import com.ativoeoperante.util.Conexao;
 
 public class DALAdmin {
 	public boolean insert(Admin a) {
-		String SQL = "INSERT INTO admins(username, password) VALUES('#1', '#2')";
+		String SQL = "INSERT INTO admins(username, password, apikey) VALUES('#1', '#2', '#3')";
 		
 		SQL = SQL.replaceAll("#1", a.getUsername());
 		SQL = SQL.replaceAll("#2", a.getPassword());
+		SQL = SQL.replaceAll("#3", a.getApiKey());
 		
 		return Conexao.getCon().manipular(SQL);
 	}
@@ -34,6 +35,21 @@ public class DALAdmin {
 		return Conexao.getCon().manipular(SQL);
 	}
 	
+	public boolean validade(String apikey) {
+		String SQL = "SELECT * FROM admins WHERE apikey='#1'";
+		
+		SQL = SQL.replaceAll("#1", apikey);
+		
+		ResultSet rs = Conexao.getCon().consultar(SQL);
+		
+		try {
+			return rs.next();
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
+	
 	public Admin get(int id) {
 		String SQL = "SELECT * FROM admins WHERE id='#1'";
 		Admin admin = null;
@@ -47,7 +63,8 @@ public class DALAdmin {
 				admin = new Admin(
 					rs.getInt("id"),
 					rs.getString("username"),
-					rs.getString("password")
+					rs.getString("password"),
+					rs.getString("apikey")
 				);
 			}
 		}
@@ -72,7 +89,8 @@ public class DALAdmin {
 				admins.add(new Admin(
 					rs.getInt("id"),
 					rs.getString("username"),
-					rs.getString("password")
+					rs.getString("password"),
+					rs.getString("apikey")
 				));
 			}
 		}
